@@ -1,0 +1,32 @@
+version: '3'
+
+volumes:
+  pg_data:
+  static:
+  media:
+services:
+  db:
+    env_file: .env
+    image: postgres:13
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  backend:
+    image: owningglory/kittygram_backend
+    env_file: .env
+    volumes:
+      - static:/backend_static
+      - media:/mediafiles
+  frontend:
+    env_file: .env
+    image: owningglory/kittygram_frontend
+    command: cp -r /app/build/. /static/
+    volumes:
+      - static:/frontend_static
+  gateway:
+    image: owningglory/kittygram_gateway
+    env_file: .env
+    volumes:
+      - static:/staticfiles
+      - media:/mediafiles
+    ports:
+      - 9000:80
